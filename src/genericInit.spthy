@@ -1,0 +1,54 @@
+restriction Equality:
+  "All x y #i. Eq(x,y) @i ==> x = y"
+
+
+
+rule InitUserOnNetwork:
+    
+    [ 
+      Fr(~userId), Fr(~userName), Fr(~phoneNumber), Fr(~userSecureContact), Fr(~secureId)
+    ]
+    
+    --[ InitUser($U, ~userId, ~phoneNumber) ]->
+    
+    [ 
+      !MNOAccount($U, ~userId, ~userName, ~phoneNumber, ~userSecureContact), 
+      !HumanMask($U, ~userId, ~phoneNumber),
+      !HumanMask($N, ~secureId, ~userSecureContact),
+      Out(~userName), Out(~phoneNumber)
+    ]
+
+rule InitMNORepresentativeOnNetwork:
+
+    [
+      Fr(~repId)
+    ] 
+    --[InitMNORepresentative($O, ~repId)]-> 
+    [
+      !MNORepresentative($O, ~repId),
+      !HumanMask($O, ~repId, ~repId), 
+    ]
+
+rule InitSimSwapWithMNORepresentative:
+  
+    [
+      !MNORepresentative(O, repId),  MaskPerform(U, userId, phoneNumber, action), Fr(~seedK)
+    ]
+
+    --[Eq(action, 'CALL_CUSTOMER_SERVICE_REPRESENTATIVE'), InitSimSwap(U, phoneNumber, ~seedK)]->
+
+    [
+        Status('INIT', repId, userId, phoneNumber, ~seedK),
+        MaskReactant(U, userId, phoneNumber, question(phoneNumber, ~seedK)),
+        Out(question(phoneNumber, ~seedK)),
+        Out(~seedK)
+    ]  
+    
+
+
+
+
+
+
+  
+

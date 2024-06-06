@@ -1,0 +1,16 @@
+theory sim_swap_with_social_authentication
+begin
+
+#define SOCIALAUTH
+#include "../src/socialAuthBasedSimSwapSteps.spthy"
+#include "../src/genericInit.spthy"
+#include "../src/secureChannel.spthy"
+#include "../src/threats/attacker.spthy"
+#include "../src/threats/operator.spthy"
+#include "../src/masks/attentive.spthy"
+#include "../src/masks/careless.spthy"
+#include "../src/lemmas/finishSimSwapProperties.spthy"
+#include "../src/lemmas/knowledgeSimSwapProperties.spthy"
+
+end
+

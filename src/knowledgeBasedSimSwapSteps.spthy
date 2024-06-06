@@ -1,0 +1,50 @@
+functions: permission/2 [private], question/2, answers/3[private], correctAnswer/1 [private]
+
+equations:
+    answers(T, K, correctAnswer(question(T, K))) = permission(T, K)
+   
+
+
+rule InitSimSwapWithMNORepresentative:
+    [
+      !MNORepresentative(O, repId),  MaskPerform(U, userId, phoneNumber, action), Fr(~seedK)
+    ]
+    --[Eq(action, 'CALL_CUSTOMER_SERVICE_REPRESENTATIVE'), InitSimSwap(U, phoneNumber, ~seedK)]->
+    [
+        Status('INIT', repId, userId, phoneNumber, ~seedK),
+        MaskReactant(U, userId, phoneNumber, question(phoneNumber, ~seedK)),
+        Out(question(phoneNumber, ~seedK)),
+        Out(~seedK)
+    ]  
+
+rule AnswerSimSwapToMNO:
+  
+    [   
+        !MNOAccount(U, userId, userName, initialUserPhoneNumber, userSecureContact),
+        MaskPerform(O, repIdH, repIdH, <action, data>),
+        In(seedK)
+    ]
+    --[Eq(action, 'REPRESENTATIVE_CONFIRMS'), Eq(initialUserPhoneNumber, data), AnswerSimSwap(initialUserPhoneNumber, seedK)]->
+    [
+        Status('AUTH_COMPLETED', repIdH, userId, data, <seedK>)
+    ]
+
+rule ConfirmSimSwapWithMNO:
+    [
+      Status('AUTH_COMPLETED', repId, userId, phoneNumber, <seedK>), 
+      Fr(~newICCID)
+    ]
+    --[ ConfirmSimSwap(phoneNumber, seedK) ]->
+    [
+      Status('FINISH_SWAP', repId, userId, phoneNumber, <seedK, ~newICCID>)
+    ]
+
+rule FinishSimSwapOnNetwork:
+    [
+      Status('FINISH_SWAP', repId, userId, phoneNumber, <seedK, newICCID>),
+      !MNOAccount(U, userId, initialUserName, initialUserPhoneNumber, userSecureContact)
+    ]
+    --[ Eq(phoneNumber, initialUserPhoneNumber), FinishSimSwap(initialUserPhoneNumber, seedK) ]->
+    [ 
+      !UserICCID(newICCID, userId)
+    ]

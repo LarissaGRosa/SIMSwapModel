@@ -1,0 +1,52 @@
+/*
+  RULE OF ASSISTANCE TO ATTACKER 1
+
+  - In this rule, the attacker manages to uncover the answers to the user's questions
+    through an attack on the database or social engineering.
+
+*/
+    
+rule SecretQuestionAttacked[colour=#BE2444]:
+  let 
+      c = answers(phoneNumber, seedK, correctAnswer(question(phoneNumber, seedK)))
+  in
+  [
+    !MNOAccount(U, userId, userName, phoneNumber, userSecureContact), In(seedK)
+  ]
+  --[ QuestionAttack(phoneNumber, seedK) ]->
+  [
+    Out(c), Out(userId)
+  ]
+
+#ifdef SOCIALAUTH
+rule AttackerAnswersQuestion[colour=#C40233]:
+    let 
+      c = answers(phoneNumber, seedK, correctAnswer(question(phoneNumber, seedK)))
+    in
+    [ 
+      In(c), !MNORepresentative(O, repId), 
+      In(userId), In(phoneNumber), In(seedK), 
+      Fr(~newICCID), Fr(~pinICCID) 
+    ]
+    --[ AttackerAnswers(phoneNumber, seedK) ]->
+    [
+      Status('AUTH_COMPLETED', repId, userId, phoneNumber, <seedK, ~pinICCID, ~newICCID>) 
+    ]
+#else
+rule AttackerAnswersQuestion[colour=#C40233]:
+    let 
+      c = answers(phoneNumber, seedK, correctAnswer(question(phoneNumber, seedK)))
+    in
+    [ 
+      In(c), !MNORepresentative(O, repId), 
+      In(userId), In(phoneNumber), In(seedK), 
+      Fr(~newICCID), Fr(~pinICCID) 
+    ]
+    --[ AttackerAnswers(phoneNumber, seedK) ]->
+    [
+      Status('AUTH_COMPLETED', repId, userId, phoneNumber, <seedK>) 
+    ]
+
+#endif
+
+
