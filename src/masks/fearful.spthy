@@ -33,6 +33,17 @@ rule AnswerFearful[colour=#BC8DCF]:
     [
         MaskPerform(M, userId, phoneNumber, <question, 'why_do_you_need_this_info'>)
     ]
+
+rule RepresentativeFearful[colour=#BC8DCF]:
+    let 
+        a = answers(phoneNumber, seedK, answers)
+    in
+    [ 
+        Status('INIT', repId, userId, phoneNumber, seedK), 
+        MaskPerform(U, userId, phoneNumberH, <question, answers>),
+        !HumanMask(O, repIdH, repIdH)]
+    --[Eq(repIdH, repId), Eq(phoneNumber, phoneNumberH), RepresentativeFearfulMask(phoneNumber, seedK), Eq(a, permission(phoneNumber, seedK))]->
+    [MaskPerform(O, repIdH, repIdH, <'REPRESENTATIVE_WILL_NOT_CONFIRM', phoneNumber>)]
     
 #ifdef SOCIALAUTH
 rule secureContactFearful[colour=#9F2B68]:

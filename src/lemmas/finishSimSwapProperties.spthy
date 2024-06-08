@@ -26,4 +26,13 @@ lemma Sim_swap_finish_honest_or_attack:
     )
   "
 
-
+  lemma Sim_swap_finish_honest_when_fearful_representative:
+    ( All phoneNumber seedK #i.  FinishSimSwap(phoneNumber, seedK) @ #i
+       ==>
+       ( (
+          Ex #j. RepresentativeFearfulMask(phoneNumber, seedK) @ j 
+          & j < i
+         )
+       )
+    )
+  "

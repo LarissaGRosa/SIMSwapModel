@@ -36,7 +36,7 @@ rule AnswerCareless[colour=#9578BE]:
         MaskPerform(M, userId, phoneNumber, <question, answers>)
     ]
 
-rule RepresentativeCareless[colour=#AC8BDB]:
+rule RepresentativeCareless[colour=#9578BE]:
     let 
         a = answers(phoneNumber, seedK, answers)
     in
