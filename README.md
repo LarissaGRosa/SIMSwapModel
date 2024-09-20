@@ -1,6 +1,6 @@
 **SIM Swap Ceremony: Formal Modeling and Analysis**
 
-This repository contains the Tamarin Prover code used in the project titled "A Multi-Layer Evaluation of the SIM Swap Ceremony: Formal Modeling and Analysis". The Tamarin Prover is a tool for the formal verification of security protocols.
+This repository contains the Tamarin Prover code for experiments in Section 4 and 5 of the SIM Swap ceremony paper.
 
 ### Installation
 
