@@ -7,11 +7,14 @@ equations:
 
 
 rule AnswerSimSwapToOperator:
-   
     let 
         a = answers(initialUserPhoneNumber, seedK, correctAnswer(question(initialUserPhoneNumber, seedK)))
     in
-    [ SimSwapINIT(seedK, opId, initialUserPhoneNumber), Fr(~newICCID), Fr(~pinICCID), In(question(initialUserPhoneNumber, seedK))]
+    [ 
+        SimSwapINIT(seedK, opId, initialUserPhoneNumber), 
+        Fr(~newICCID), Fr(~pinICCID), 
+        In(question(initialUserPhoneNumber, seedK))
+    ]
     --[AnswerSimSwap(initialUserPhoneNumber, seedK)]->
     [
         SimSwapANSWER(a, opId, initialUserPhoneNumber, seedK),
@@ -20,25 +23,39 @@ rule AnswerSimSwapToOperator:
     ]
 
 rule OperatorAskForSelectSecureContact:
-    [SimSwapANSWER(a, opId, initialUserPhoneNumber, seedK), Fr(~newICCID), Fr(~pinICCID), !UserAccount(U, userId, initialUserName, initialUserPhoneNumber, userSecureContact)]
+    [
+        SimSwapANSWER(a, opId, initialUserPhoneNumber, seedK), 
+        Fr(~newICCID), Fr(~pinICCID), 
+        !UserAccount(U, userId, initialUserName, initialUserPhoneNumber, userSecureContact)
+    ]
     -->
     [
       Out('Select_a_number_for_choose_your_secure_contact'), 
-      SimSwapASKFORCONTACT(a, opId, initialUserPhoneNumber, seedK),
-      
+      SimSwapASKFORCONTACT(a, opId, initialUserPhoneNumber, seedK)
     ]
 
 rule UserSelectsSecureContact:
-    [SimSwapASKFORCONTACT(a, opId, initialUserPhoneNumber, seedK), Fr(~randomNumberForSelectContact), In('Select_a_number_for_choose_your_secure_contact')]
+    [
+        SimSwapASKFORCONTACT(a, opId, initialUserPhoneNumber, seedK), 
+        Fr(~randomNumberForSelectContact), 
+        In('Select_a_number_for_choose_your_secure_contact')
+    ]
     --[SelectSecureContact(initialUserPhoneNumber, seedK, ~randomNumberForSelectContact)]->
-    [Out(~randomNumberForSelectContact), SimSwapSELECTSCONTACT(a, opId, initialUserPhoneNumber, seedK, ~randomNumberForSelectContact)]
+    [
+        Out(~randomNumberForSelectContact), 
+        SimSwapSELECTSCONTACT(a, opId, initialUserPhoneNumber, seedK, ~randomNumberForSelectContact)
+    ]
 
     
 rule SendMessageToContactWithOperator:
     let
       userSecureContactMessage = sendConfirmationToSecureContact(initialUserPhoneNumber, randomNumberForSelectContact, pinICCID)
     in
-    [SimSwapSELECTSCONTACT(a, opId, initialUserPhoneNumber, seedK, randomNumberForSelectContact), !UserOnApproveICCID(newICCID, pinICCID,  initialUserPhoneNumber), In(randomNumberForSelectContact)]
+    [
+        SimSwapSELECTSCONTACT(a, opId, initialUserPhoneNumber, seedK, randomNumberForSelectContact), 
+        !UserOnApproveICCID(newICCID, pinICCID,  initialUserPhoneNumber), 
+        In(randomNumberForSelectContact)
+    ]
     --[SendMessageSimSwap(initialUserPhoneNumber, randomNumberForSelectContact)]->
     [ 
       SimSwapMESSAGECONTACT(a, opId, initialUserPhoneNumber, randomNumberForSelectContact, userSecureContactMessage, seedK),
@@ -47,17 +64,32 @@ rule SendMessageToContactWithOperator:
 
 
 rule SecureContactGetsMessagesAndConfirmsWithUser:
-    [SimSwapMESSAGECONTACT(a, opId, initialUserPhoneNumber, randomNumberForSelectContact,userSecureContactMessage, seedK), In_S(N,S, userSecureContactMessage)]
+    [
+        SimSwapMESSAGECONTACT(a, opId, initialUserPhoneNumber, randomNumberForSelectContact,userSecureContactMessage, seedK), 
+        In_S(N,S, userSecureContactMessage)
+    ]
     -->
-    [SimSwapRECEIVECONFIRMMESSAGE(a, opId, initialUserPhoneNumber, randomNumberForSelectContact, seedK, userSecureContactMessage)]
+    [
+        SimSwapRECEIVECONFIRMMESSAGE(a, opId, initialUserPhoneNumber, randomNumberForSelectContact, seedK, userSecureContactMessage)
+    ]
 
 
 rule SecureContactComparesPinAndFinishSimSwap:
-    [In_S(U, S, <'trying_sim_swap', pinICCID>),  SimSwapRECEIVECONFIRMMESSAGE(a, opId, initialUserPhoneNumber, randomNumberForSelectContact, seedK, userSecureContactMessage)]
+    [
+        In_S(U, S, <'trying_sim_swap', pinICCID>),  
+        SimSwapRECEIVECONFIRMMESSAGE(a, opId, initialUserPhoneNumber, randomNumberForSelectContact, seedK, userSecureContactMessage)
+    ]
     --[Eq(pinICCID, getSentPin(userSecureContactMessage)), ConfirmsPinSimSwap(initialUserPhoneNumber, seedK)]->
-    [FinishSwap(initialUserPhoneNumber, pinICCID, seedK)]
+    [
+        FinishSwap(initialUserPhoneNumber, pinICCID, seedK)
+    ]
 
 rule FinishSimSwapOnNetwork:
-    [FinishSwap(initialUserPhoneNumber, pinICCID1, seedK), !UserOnApproveICCID(newICCID, pinICCID,  initialUserPhoneNumber)]
+    [
+        FinishSwap(initialUserPhoneNumber, pinICCID1, seedK), 
+        !UserOnApproveICCID(newICCID, pinICCID,  initialUserPhoneNumber)
+    ]
     --[Eq(pinICCID, pinICCID1), FinishSimSwap(initialUserPhoneNumber, seedK)]->
-    [ !UserICCID(newICCID, initialUserPhoneNumber)]
+    [ 
+        !UserICCID(newICCID, initialUserPhoneNumber)
+    ]
