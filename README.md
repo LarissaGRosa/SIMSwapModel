@@ -1,6 +1,6 @@
 **SIM Swap Ceremony: Formal Modeling and Analysis**
 
-This repository contains the Tamarin Prover code for experiments in Section 4 and 5 of the SIM Swap ceremony paper.
+This repository contains the Tamarin Prover code for experiments in Section 3 and 4 of the SIM Swap ceremony paper.
 
 ### Installation
 
